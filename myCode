@@ -1,0 +1,181 @@
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Interactive Task Manager</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 30px;
+    }
+    .container {
+      max-width: 1100px;
+      width: 100%;
+      background: rgba(255,255,255,0.1);
+      padding: 25px;
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+    h1 {
+      text-align: center;
+      color: #fff;
+      font-size: 2.2rem;
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .controls input, .controls select, .controls button {
+      padding: 10px 14px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+    }
+    .controls input, .controls select {
+      flex: 1;
+      min-width: 150px;
+    }
+    .controls button {
+      background: #2575fc;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .controls button:hover {
+      background: #1a5fd1;
+      transform: scale(1.05);
+    }
+    .board {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .column {
+      flex: 1;
+      background: rgba(255,255,255,0.15);
+      padding: 15px;
+      border-radius: 12px;
+      min-height: 350px;
+      backdrop-filter: blur(5px);
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+    .column:hover {
+      transform: translateY(-3px);
+    }
+    .column h2 {
+      text-align: center;
+      margin-bottom: 15px;
+      color: #fff;
+      font-size: 1.3rem;
+      letter-spacing: 1px;
+    }
+    .task-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .task {
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.9);
+      border-radius: 8px;
+      cursor: grab;
+      font-weight: 500;
+      border-left: 6px solid transparent;
+      transition: all 0.2s ease-in-out;
+    }
+    .task:hover {
+      transform: scale(1.03);
+    }
+    .task.low { border-color: #2ecc71; }
+    .task.medium { border-color: #f39c12; }
+    .task.high { border-color: #e74c3c; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Interactive Task Manager</h1>
+    <div class="controls">
+      <input type="text" id="task-input" placeholder="New task" />
+      <select id="priority-select">
+        <option value="low">Low Priority</option>
+        <option value="medium">Medium Priority</option>
+        <option value="high">High Priority</option>
+      </select>
+      <button id="add-task-btn">Add Task</button>
+    </div>
+    <div class="board">
+      <div class="column" id="todo" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h2>To Do</h2>
+        <div class="task-container"></div>
+      </div>
+      <div class="column" id="in-progress" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h2>In Progress</h2>
+        <div class="task-container"></div>
+      </div>
+      <div class="column" id="done" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h2>Done</h2>
+        <div class="task-container"></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    let taskIdCounter = 0;
+
+    function allowDrop(e) {
+      e.preventDefault();
+    }
+
+    function drag(e) {
+      e.dataTransfer.setData("text/plain", e.target.id);
+    }
+
+    function drop(e) {
+      e.preventDefault();
+      const id = e.dataTransfer.getData("text/plain");
+      const task = document.getElementById(id);
+      const container = e.currentTarget.querySelector('.task-container');
+      container.appendChild(task);
+    }
+
+    document.getElementById('add-task-btn').addEventListener('click', () => {
+      const input = document.getElementById('task-input');
+      const text = input.value.trim();
+      if (!text) return;
+      const priority = document.getElementById('priority-select').value;
+
+      const task = document.createElement('div');
+      const id = `task-${taskIdCounter++}`;
+      task.id = id;
+      task.className = `task ${priority}`;
+      task.textContent = text;
+      task.draggable = true;
+      task.addEventListener('dragstart', drag);
+
+      document.querySelector('#todo .task-container').appendChild(task);
+      input.value = '';
+    });
+  </script>
+</body>
+</html>
+```
